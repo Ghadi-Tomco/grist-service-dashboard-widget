@@ -1,15 +1,19 @@
-# Dashboard Service Utilisateur — V1.3 single-file
+# Dashboard Service Utilisateur — V1.4
 
-Cette version est volontairement livrée dans un seul `index.html` afin d’éviter les problèmes de cache ou de remplacement partiel de `app.js` / `styles.css` sur GitHub Pages.
+Version monofichier (`index.html`) du dashboard Grist multi-tables.
 
-## Correctifs
+## Évolutions V1.4
 
-- JavaScript et CSS intégrés dans `index.html`;
-- bouton **Configurer** actif avant tout appel à l’API Grist;
-- badge visible `v1.3` pour confirmer la version chargée;
-- appels API limités dans le temps;
-- affichage non bloquant même si les métadonnées Grist sont indisponibles;
-- détection élargie des anciens identifiants techniques de tables;
-- configuration manuelle possible sans mapping natif.
+- statuts RTU et domaines compatibles avec des colonnes texte, Choice ou Reference;
+- statut **En attente complétion RTU** affiché sans détail des domaines lorsque le RTU n’est pas encore transmis;
+- suppression du KPI **RTU à compléter**;
+- KPI **Urgents** renommé **P0 ou P1**;
+- EMM regroupé par catégories : Kiosque, Politique Verrouillage, Wi-Fi, Messagerie, Push Lien Web App et Proxy VIP;
+- synthèse du nombre de sujets par statut pour chaque catégorie EMM;
+- statut synthétique par catégorie lorsqu’un seul service utilisateur est sélectionné;
+- filtres séparés entre référentiel des services et sujets opérationnels;
+- nouveaux filtres Communauté, Département, Statut déploiement et Priorité déploiement;
+- liste des services utilisateurs recalculée selon les filtres opérationnels actifs;
+- édition améliorée des colonnes Reference génériques.
 
 Le widget nécessite **Full document access**.
