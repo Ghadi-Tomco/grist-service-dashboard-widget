@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dashboard de tous les Services Utilisateurs</title>
+<title>Dashboard Services Utilisateurs</title>
   <style>
 :root {
   --bg: #f4f6fa;
@@ -104,6 +104,20 @@ input, select, textarea {
 }
 
 input, select { height: 38px; padding: 0 10px; }
+select:not([multiple]) {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 36px;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.25 6 6.25 11 1.25' fill='none' stroke='%23576378' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 8px;
+  box-shadow: none;
+}
+select:not([multiple]):hover { border-color: #aeb9ca; background-color: #fbfcff; }
+select:not([multiple])::-ms-expand { display: none; }
 textarea { padding: 10px; resize: vertical; min-height: 100px; line-height: 1.45; }
 input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(49, 87, 255, .11); }
 
@@ -237,6 +251,24 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
 .source-header h2 { margin: 2px 0 0; font-size: 17px; letter-spacing: -.015em; }
 .source-kicker { color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .045em; text-transform: uppercase; }
 .source-count { min-width: 32px; text-align: center; padding: 5px 8px; border-radius: 999px; background: #eef2f7; color: #445168; font-weight: 850; }
+.source-header__actions { display: flex; align-items: center; gap: 7px; }
+.collapse-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #566276;
+  transition: .16s ease;
+}
+.collapse-toggle:hover { border-color: #b7c2d1; background: #eef2f7; color: #28354b; }
+.collapse-chevron { display: block; font-size: 18px; line-height: 1; transform: rotate(0deg); transition: transform .18s ease; }
+.source-panel.is-collapsed .source-list { display: none; }
+.source-panel.is-collapsed .source-header { border-bottom-color: transparent; }
+.source-panel.is-collapsed .collapse-chevron { transform: rotate(-90deg); }
 
 .source-list {
   max-height: 620px;
@@ -312,6 +344,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
 .badge--complete { background: #e6f6ee; color: #117149; }
 .badge--incomplete { background: #fff0d7; color: #9a5000; }
 .badge--na { background: #eef1f5; color: #667085; }
+.badge--waiting { background: #e5e7eb; color: #374151; }
 
 .rtu-progress { margin-top: 10px; }
 .rtu-progress__line { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; color: #667085; font-size: 11px; font-weight: 700; }
@@ -438,8 +471,8 @@ body.loading .source-list, body.loading .kpi-bar, body.loading .service-profile 
   padding: 9px;
 }
 .filter-row--services {
-  grid-template-columns: 88px minmax(140px,.8fr) minmax(125px,.7fr) minmax(245px,1.45fr) minmax(150px,.85fr) minmax(150px,.85fr);
-  background: #f8faff;
+  grid-template-columns: 78px minmax(260px,1.45fr) minmax(145px,.8fr) minmax(125px,.7fr) minmax(150px,.85fr) minmax(150px,.85fr);
+  background: #e3e3fd;
   border: 1px solid #e5eaff;
 }
 .filter-row--work {
@@ -487,39 +520,51 @@ body.loading .source-list, body.loading .kpi-bar, body.loading .service-profile 
   gap: 10px;
 }
 .emm-category-group {
+  --emm-accent: #6172f3;
+  --emm-soft: #f1f3ff;
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--line);
+  border-left: 4px solid var(--emm-accent);
   border-radius: 13px;
-  background: #fbfcff;
+  background: #fff;
+  box-shadow: 0 3px 11px rgba(29, 43, 68, .045);
 }
-.emm-category-group--empty { background: #fafbfc; }
+.emm-category-group--kiosque { --emm-accent: #6366f1; --emm-soft: #f1f2ff; }
+.emm-category-group--politique_verrouillage { --emm-accent: #8b5cf6; --emm-soft: #f5f0ff; }
+.emm-category-group--wifi { --emm-accent: #0ea5e9; --emm-soft: #eef9ff; }
+.emm-category-group--messagerie { --emm-accent: #14b8a6; --emm-soft: #ecfdf9; }
+.emm-category-group--push_webapp { --emm-accent: #f59e0b; --emm-soft: #fff8e8; }
+.emm-category-group--proxy_vip { --emm-accent: #ec4899; --emm-soft: #fff0f7; }
+.emm-category-group--autres { --emm-accent: #64748b; --emm-soft: #f4f6f8; }
+.emm-category-group--empty { background: #fafbfc; opacity: .9; }
 .emm-category-header {
-  min-height: 56px;
+  width: 100%;
+  min-height: 58px;
   padding: 10px 11px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  border: 0;
   border-bottom: 1px solid var(--line);
-  background: linear-gradient(135deg, #ffffff, #f6f8ff);
+  background: linear-gradient(135deg, #ffffff 15%, var(--emm-soft) 100%);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
 }
+.emm-category-header:hover { filter: brightness(.992); }
 .emm-category-title { font-size: 13.5px; font-weight: 850; color: #24324a; }
 .emm-category-subtitle { margin-top: 2px; color: var(--muted); font-size: 10.5px; font-weight: 650; }
+.emm-category-header__right { display: flex; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; }
 .emm-status-summary { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
+.emm-category-chevron { color: #536078; font-size: 18px; line-height: 1; flex: 0 0 auto; transition: transform .18s ease; }
 .emm-category-body { padding: 8px; }
 .emm-category-body .subject-card { margin-bottom: 7px; }
 .emm-category-empty { padding: 14px 10px; color: #8792a5; text-align: center; font-size: 11.5px; }
-.rtu-waiting {
-  margin-top: 10px;
-  padding: 10px 11px;
-  border-radius: 10px;
-  background: #fff5e7;
-  color: #8a4c05;
-  font-size: 11.5px;
-  line-height: 1.4;
-  font-weight: 650;
-}
+.emm-category-group.is-collapsed .emm-category-body { display: none; }
+.emm-category-group.is-collapsed .emm-category-header { border-bottom-color: transparent; }
+.emm-category-group.is-collapsed .emm-category-chevron { transform: rotate(-90deg); }
 
 @media (max-width: 1250px) {
   .filter-row--services { grid-template-columns: 80px repeat(2, minmax(145px,1fr)); }
@@ -537,96 +582,86 @@ body.loading .source-list, body.loading .kpi-bar, body.loading .service-profile 
 }
 
 
-/* V1.5 — interface plus compacte et repliable */
+
+/* V1.6 — compact filters and restrained semantic colours */
+.filters-panel {
+  display: grid;
+  gap: 0;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+.filter-row {
+  display: grid;
+  gap: 10px;
+  align-items: end;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
 .filter-row--services {
-  grid-template-columns: 72px minmax(260px,1.45fr) minmax(140px,.8fr) minmax(125px,.7fr) minmax(150px,.85fr) minmax(150px,.85fr);
-  background: #e3e3fd;
-  border-color: #d5d5f6;
+  grid-template-columns: minmax(260px,1.45fr) minmax(145px,.8fr) minmax(125px,.7fr) minmax(150px,.85fr) minmax(150px,.85fr);
+  background: transparent;
+  border: 0;
 }
-.filter-row__title { align-self: end; min-height: 38px; display: flex; align-items: center; }
-.filter-row__title small { display: none; }
+.filter-row--work {
+  grid-template-columns: minmax(280px,1.6fr) minmax(170px,.65fr) minmax(155px,.6fr);
+  background: transparent;
+  border: 0;
+  border-top: 1px solid #edf0f4;
+  margin-top: 11px;
+  padding-top: 11px;
+  align-items: center;
+}
+.filter-row__title { display: none !important; }
+.filter-row--work .compact-filter { align-self: center; }
+.filter-row--work input,
+.filter-row--work select { height: 40px; }
 
-/* Modernise les listes déroulantes natives sans changer leur fonctionnement Grist. */
-select:not([multiple]) {
-  -webkit-appearance: none;
-  appearance: none;
-  padding-right: 36px;
-  border-color: #cfd7e4;
-  background-color: #ffffff;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%23526078' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 11px center;
-  background-size: 16px 16px;
-  box-shadow: 0 1px 2px rgba(16,24,40,.035);
-  transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
-}
-select:not([multiple]):hover { border-color: #aeb9ca; background-color: #fbfcff; }
-select:not([multiple]):focus { background-color: #fff; }
-
-.source-heading, .emm-category-heading { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.collapse-btn {
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
-  display: inline-grid;
-  place-items: center;
-  border: 1px solid #d9e0eb;
-  border-radius: 9px;
-  background: #f8fafc;
-  color: #536178;
-  transition: background .15s ease, border-color .15s ease, transform .15s ease;
-}
-.collapse-btn:hover { background: #eef2f7; border-color: #bdc7d5; }
-.collapse-chevron {
-  display: block;
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: translateY(-2px) rotate(45deg);
-  transition: transform .18s ease;
-}
-.source-panel.is-collapsed .source-collapse-btn .collapse-chevron,
-.emm-category-group.is-collapsed .emm-collapse-btn .collapse-chevron {
-  transform: translateX(-1px) rotate(-45deg);
-}
-.source-panel.is-collapsed .source-list { display: none; }
-.source-panel.is-collapsed .source-header { border-bottom-color: transparent; }
-.source-panel.is-collapsed { align-self: start; }
-
+/* Neutral presentation: colour is reserved for priority and overdue signals. */
+.subject-card::before { background: #d4dae4 !important; }
+.subject-card--rtu,
+.subject-card--infra,
+.subject-card--emm,
+.subject-card--conception { --source-color: #d4dae4 !important; }
+.badge--status,
+.badge--complete,
+.badge--incomplete,
+.badge--na,
 .badge--waiting {
-  background: #e5e7eb;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: #edf1f5 !important;
+  color: #4b576c !important;
 }
+.progress-bar { background: #697386 !important; }
+.kpi--info { border-left-color: #c9d0da !important; }
 
-/* Séparation plus nette des catégories EMM. */
-.emm-category-grid { gap: 12px; }
-.emm-category-group {
-  border: 1px solid #d8dfeb;
-  border-left: 4px solid var(--category-color, #64748b);
-  background: #ffffff;
-  box-shadow: 0 5px 15px rgba(29,43,68,.055);
+.emm-category-group,
+.emm-category-group--kiosque,
+.emm-category-group--politique_verrouillage,
+.emm-category-group--wifi,
+.emm-category-group--messagerie,
+.emm-category-group--push_webapp,
+.emm-category-group--proxy_vip,
+.emm-category-group--autres {
+  --emm-accent: #cfd5df !important;
+  --emm-soft: #f7f8fa !important;
+  border-left-color: #cfd5df !important;
 }
 .emm-category-header {
-  min-height: 60px;
-  padding: 10px 12px 10px 9px;
-  background: #f5f6ff;
+  background: #f7f8fa !important;
 }
-.emm-category-group.is-collapsed .emm-category-header { border-bottom-color: transparent; }
-.emm-category-group.is-collapsed .emm-category-body { display: none; }
-.emm-category-body { background: #fbfcff; }
-.emm-collapse-btn { width: 28px; height: 28px; flex-basis: 28px; background: #ffffff; }
-.emm-status-summary { max-width: 58%; }
 
 @media (max-width: 1250px) {
-  .filter-row--services { grid-template-columns: 80px minmax(230px,1.5fr) repeat(2,minmax(145px,1fr)); }
-  .filter-row--services .service-picker { grid-column: span 1; }
+  .filter-row--services { grid-template-columns: repeat(2, minmax(145px,1fr)); }
+  .filter-row--services .service-picker { grid-column: span 2; }
+  .filter-row--work { grid-template-columns: 1.4fr 1fr 1fr; }
 }
-@media (max-width: 900px) {
-  .filter-row--services { grid-template-columns: 1fr 1fr; }
-  .filter-row--services .filter-row__title { grid-column: 1 / -1; min-height: auto; }
-  .filter-row--services .service-picker { grid-column: 1 / -1; }
+@media (max-width: 800px) {
+  .filters-panel, .filter-row, .filter-row--services, .filter-row--work { grid-template-columns: 1fr; }
+  .filter-row--services .service-picker { grid-column: auto; }
 }
 
 </style>
@@ -636,7 +671,7 @@ select:not([multiple]):focus { background-color: #fff; }
   <div class="app-shell">
     <header class="topbar">
       <div class="brand-block">
-        <h1 id="dashboardTitle">Dashboard de tous les Services Utilisateurs</h1>
+        <h1 id="dashboardTitle">Dashboard Commun</h1>
         <span id="lastRefresh" class="last-refresh">Chargement…</span>
       </div>
       <div class="top-actions">
@@ -656,10 +691,6 @@ select:not([multiple]):focus { background-color: #fff; }
 
     <section class="filters-panel" aria-label="Filtres du dashboard">
       <div class="filter-row filter-row--services">
-        <div class="filter-row__title">
-          <span>Services</span>
-        </div>
-
         <div class="service-picker" id="servicePicker">
           <label for="serviceSearch">Service utilisateur</label>
           <div class="combobox-wrap">
@@ -700,101 +731,89 @@ select:not([multiple]):focus { background-color: #fff; }
       </div>
 
       <div class="filter-row filter-row--work">
-        <div class="filter-row__title">
-          <span>Sujets</span>
-        </div>
-
         <div class="compact-filter compact-filter--search">
-          <label for="globalSearch">Recherche</label>
-          <input id="globalSearch" type="search" placeholder="Sujet, description, porteur…" />
+          <input id="globalSearch" type="search" placeholder="Rechercher un mot clé" aria-label="Rechercher un mot clé" />
         </div>
 
         <div class="compact-filter">
-          <label for="statusFilter">Statut</label>
-          <select id="statusFilter">
+          <select id="statusFilter" aria-label="Statut">
             <option value="">Tous les statuts</option>
           </select>
         </div>
 
         <div class="compact-filter">
-          <label for="priorityFilter">Prio</label>
-          <select id="priorityFilter">
+          <select id="priorityFilter" aria-label="Priorité">
             <option value="">Toutes les priorités</option>
           </select>
         </div>
-
-        <label class="check-filter">
-          <input id="hideClosedToggle" type="checkbox" />
-          <span>Masquer les sujets terminés</span>
-        </label>
       </div>
     </section>
 
-    <section id="serviceProfile" class="service-profile hidden"></section>
+    <section id="serviceProfile" class="service-profile service-profile--all"></section>
 
     <section id="kpiBar" class="kpi-bar" aria-label="Indicateurs consolidés"></section>
 
     <main class="dashboard-grid">
-      <section class="source-panel source-panel--rtu" data-source="rtu">
+      <section class="source-panel source-panel--rtu is-collapsed" data-source="rtu">
         <div class="source-header">
-          <div class="source-heading">
-            <button class="collapse-btn source-collapse-btn" type="button" data-source-toggle="rtu" aria-expanded="true" aria-label="Réduire RTU">
-              <span class="collapse-chevron" aria-hidden="true"></span>
-            </button>
-            <div>
-              <div class="source-kicker">Complétude du RTU</div>
-              <h2>RTU</h2>
-            </div>
+          <div>
+            <div class="source-kicker">Référentiel technique</div>
+            <h2>RTU</h2>
           </div>
-          <span id="rtuCount" class="source-count">0</span>
+          <div class="source-header__actions">
+            <span id="rtuCount" class="source-count">0</span>
+            <button class="collapse-toggle" type="button" data-collapse-source="rtu" aria-expanded="false" aria-controls="rtuList" title="Développer la section">
+              <span class="collapse-chevron" aria-hidden="true">⌄</span>
+            </button>
+          </div>
         </div>
         <div id="rtuList" class="source-list"></div>
       </section>
 
-      <section class="source-panel source-panel--infra" data-source="infra">
+      <section class="source-panel source-panel--infra is-collapsed" data-source="infra">
         <div class="source-header">
-          <div class="source-heading">
-            <button class="collapse-btn source-collapse-btn" type="button" data-source-toggle="infra" aria-expanded="true" aria-label="Réduire Infra & Flux">
-              <span class="collapse-chevron" aria-hidden="true"></span>
-            </button>
-            <div>
-              <div class="source-kicker">Réseau, raccordement et flux</div>
-              <h2>Infra &amp; Flux</h2>
-            </div>
+          <div>
+            <div class="source-kicker">Réseau, raccordement et flux</div>
+            <h2>Infra &amp; Flux</h2>
           </div>
-          <span id="infraCount" class="source-count">0</span>
+          <div class="source-header__actions">
+            <span id="infraCount" class="source-count">0</span>
+            <button class="collapse-toggle" type="button" data-collapse-source="infra" aria-expanded="false" aria-controls="infraList" title="Développer la section">
+              <span class="collapse-chevron" aria-hidden="true">⌄</span>
+            </button>
+          </div>
         </div>
         <div id="infraList" class="source-list"></div>
       </section>
 
-      <section class="source-panel source-panel--emm" data-source="emm">
+      <section class="source-panel source-panel--emm is-collapsed" data-source="emm">
         <div class="source-header">
-          <div class="source-heading">
-            <button class="collapse-btn source-collapse-btn" type="button" data-source-toggle="emm" aria-expanded="true" aria-label="Réduire EMM">
-              <span class="collapse-chevron" aria-hidden="true"></span>
-            </button>
-            <div>
-              <div class="source-kicker">Services et configurations terminaux</div>
-              <h2>EMM</h2>
-            </div>
+          <div>
+            <div class="source-kicker">Services et configurations terminaux</div>
+            <h2>EMM</h2>
           </div>
-          <span id="emmCount" class="source-count">0</span>
+          <div class="source-header__actions">
+            <span id="emmCount" class="source-count">0</span>
+            <button class="collapse-toggle" type="button" data-collapse-source="emm" aria-expanded="false" aria-controls="emmList" title="Développer la section">
+              <span class="collapse-chevron" aria-hidden="true">⌄</span>
+            </button>
+          </div>
         </div>
         <div id="emmList" class="source-list"></div>
       </section>
 
-      <section class="source-panel source-panel--conception" data-source="conception">
+      <section class="source-panel source-panel--conception is-collapsed" data-source="conception">
         <div class="source-header">
-          <div class="source-heading">
-            <button class="collapse-btn source-collapse-btn" type="button" data-source-toggle="conception" aria-expanded="true" aria-label="Réduire Chantiers de conception">
-              <span class="collapse-chevron" aria-hidden="true"></span>
-            </button>
-            <div>
-              <div class="source-kicker">Conception et mise en production</div>
-              <h2>Chantiers de conception</h2>
-            </div>
+          <div>
+            <div class="source-kicker">Conception et mise en production</div>
+            <h2>Chantiers de conception</h2>
           </div>
-          <span id="conceptionCount" class="source-count">0</span>
+          <div class="source-header__actions">
+            <span id="conceptionCount" class="source-count">0</span>
+            <button class="collapse-toggle" type="button" data-collapse-source="conception" aria-expanded="false" aria-controls="conceptionList" title="Développer la section">
+              <span class="collapse-chevron" aria-hidden="true">⌄</span>
+            </button>
+          </div>
         </div>
         <div id="conceptionList" class="source-list"></div>
       </section>
@@ -1063,15 +1082,6 @@ const EMM_CATEGORY_DEFS = [
   { key: "push_webapp", label: "Push Lien Web App" },
   { key: "proxy_vip", label: "Proxy VIP" }
 ];
-const EMM_CATEGORY_COLORS = {
-  kiosque: "#5b5bd6",
-  politique_verrouillage: "#8b5cf6",
-  wifi: "#1684b8",
-  messagerie: "#2563eb",
-  push_webapp: "#0f766e",
-  proxy_vip: "#b45309",
-  autres: "#64748b"
-};
 
 const PRIORITY_RANK = { p0: 0, haute: 0, p1: 1, p2: 2, moyenne: 2, p3: 3, basse: 3 };
 
@@ -1095,8 +1105,15 @@ let serviceComboIndex = -1;
 let currentAccessLevel = "unknown";
 let setupAutoOpened = false;
 let lastGlobalError = "";
-const collapsedSources = new Set();
-const collapsedEmmCategories = new Set();
+
+const sourceCollapseState = Object.assign(
+  { rtu: true, infra: true, emm: true, conception: true },
+  readStoredState("grist_service_dashboard_collapsed_sources_v16")
+);
+const emmCategoryCollapseState = Object.assign(
+  { kiosque: true, politique_verrouillage: true, wifi: true, messagerie: true, push_webapp: true, proxy_vip: true, autres: true },
+  readStoredState("grist_service_dashboard_collapsed_emm_categories_v16")
+);
 
 const filters = {
   community: "",
@@ -1109,7 +1126,7 @@ const filters = {
   hideClosed: false
 };
 
-const WIDGET_VERSION = "1.5.0";
+const WIDGET_VERSION = "1.6.0";
 const API_TIMEOUT_MS = 6000;
 window.__GRIST_SERVICE_DASHBOARD_VERSION__ = WIDGET_VERSION;
 
@@ -1119,6 +1136,51 @@ function withTimeout(promise, label, timeoutMs = API_TIMEOUT_MS) {
     timer = setTimeout(() => reject(new Error(`${label} : délai d’attente dépassé (${Math.round(timeoutMs / 1000)} s)`)), timeoutMs);
   });
   return Promise.race([Promise.resolve(promise), timeout]).finally(() => { if (timer) clearTimeout(timer); });
+}
+
+function readStoredState(key) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (_) {
+    return {};
+  }
+}
+
+function writeStoredState(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) { /* Storage may be unavailable. */ }
+}
+
+function applySourceCollapseState(sourceKey) {
+  const panel = document.querySelector(`.source-panel[data-source="${sourceKey}"]`);
+  const button = document.querySelector(`[data-collapse-source="${sourceKey}"]`);
+  const collapsed = Boolean(sourceCollapseState[sourceKey]);
+  if (panel) panel.classList.toggle("is-collapsed", collapsed);
+  if (button) {
+    button.setAttribute("aria-expanded", String(!collapsed));
+    button.title = collapsed ? "Développer la section" : "Réduire la section";
+  }
+}
+
+function toggleSourcePanel(sourceKey) {
+  sourceCollapseState[sourceKey] = !sourceCollapseState[sourceKey];
+  writeStoredState("grist_service_dashboard_collapsed_sources_v16", sourceCollapseState);
+  applySourceCollapseState(sourceKey);
+}
+
+function dashboardTitleText() {
+  if (selectedService) return `Dashboard du Service ${selectedService.label}`;
+  const community = filters.community;
+  const department = filters.department;
+  if (community && department) return `Dashboard de la Communauté ${community} dans le Département ${department}`;
+  if (community) return `Dashboard de la Communauté ${community}`;
+  if (department) return `Dashboard du Département ${department}`;
+  return "Dashboard Commun";
+}
+
+function renderDashboardTitle() {
+  const title = $("dashboardTitle");
+  if (title) title.textContent = dashboardTitleText();
 }
 
 // Compatibility note:
@@ -1263,7 +1325,6 @@ function isOverdue(dateValue, status) {
 
 function statusBadgeClass(value) {
   const key = normalizeStatus(value);
-  if (key.includes("attentecompletionrtu")) return "badge--waiting";
   if (key.includes("incomplet") || key.includes("attente") || key.includes("nouveau") || key.includes("cours") || key.includes("test")) return "badge--incomplete";
   if (key === "complet" || key === "complete" || isClosedStatus(value)) return "badge--complete";
   if (key === "na" || key.includes("nonapplicable")) return "badge--na";
@@ -1764,36 +1825,6 @@ function fillSimpleSelect(select, values, firstLabel, current) {
   select.value = values.includes(current) ? current : "";
 }
 
-function updateDashboardTitle() {
-  let title = "Dashboard de tous les Services Utilisateurs";
-  if (selectedService) {
-    title = `Dashboard du Service ${selectedService.label}`;
-  } else if (filters.community && filters.department) {
-    title = `Dashboard de la Communauté ${filters.community} dans le Département ${filters.department}`;
-  } else if (filters.community) {
-    title = `Dashboard de la Communauté ${filters.community}`;
-  } else if (filters.department) {
-    title = `Dashboard du Département ${filters.department}`;
-  }
-  const titleNode = $("dashboardTitle");
-  if (titleNode) titleNode.textContent = title;
-  document.title = title;
-}
-
-function setSourceCollapsed(sourceKey, collapsed) {
-  const panel = document.querySelector(`.source-panel[data-source="${sourceKey}"]`);
-  const button = document.querySelector(`[data-source-toggle="${sourceKey}"]`);
-  if (!panel || !button) return;
-  panel.classList.toggle("is-collapsed", collapsed);
-  button.setAttribute("aria-expanded", String(!collapsed));
-  button.setAttribute("aria-label", `${collapsed ? "Déployer" : "Réduire"} ${panel.querySelector("h2")?.textContent || sourceKey}`);
-  if (collapsed) collapsedSources.add(sourceKey); else collapsedSources.delete(sourceKey);
-}
-
-function toggleSourcePanel(sourceKey) {
-  setSourceCollapsed(sourceKey, !collapsedSources.has(sourceKey));
-}
-
 function renderServiceProfile() {
   const profile = $("serviceProfile");
   profile.replaceChildren();
@@ -1855,7 +1886,7 @@ function renderRtuCard(subject) {
   left.appendChild(makeEl("div", "subject-service", subject.service || "Service non renseigné"));
   top.appendChild(left);
   const shownStatus = subject.rtuWaiting ? "En attente complétion RTU" : (subject.status || "Statut non renseigné");
-  addBadge(top, shownStatus, statusBadgeClass(shownStatus));
+  addBadge(top, shownStatus, subject.rtuWaiting ? "badge--waiting" : statusBadgeClass(shownStatus));
   card.appendChild(top);
 
   if (!subject.rtuWaiting) {
@@ -1914,33 +1945,25 @@ function singleServiceEmmSummary(subjects, scopedSubjects) {
 }
 
 function renderEmmCategoryGroup(def, subjects, scopedSubjects = subjects) {
-  const isCollapsed = collapsedEmmCategories.has(def.key);
-  const group = makeEl("section", `emm-category-group emm-category-group--${def.key} ${subjects.length ? "" : "emm-category-group--empty"} ${isCollapsed ? "is-collapsed" : ""}`.trim());
-  group.style.setProperty("--category-color", EMM_CATEGORY_COLORS[def.key] || EMM_CATEGORY_COLORS.autres);
-
-  const header = makeEl("div", "emm-category-header");
-  const heading = makeEl("div", "emm-category-heading");
-  const toggle = makeEl("button", "collapse-btn emm-collapse-btn");
-  toggle.type = "button";
-  toggle.setAttribute("aria-expanded", String(!isCollapsed));
-  toggle.setAttribute("aria-label", `${isCollapsed ? "Déployer" : "Réduire"} ${def.label}`);
-  toggle.appendChild(makeEl("span", "collapse-chevron"));
-  toggle.addEventListener("click", (event) => {
-    event.stopPropagation();
-    const collapsed = !group.classList.contains("is-collapsed");
-    group.classList.toggle("is-collapsed", collapsed);
-    toggle.setAttribute("aria-expanded", String(!collapsed));
-    toggle.setAttribute("aria-label", `${collapsed ? "Déployer" : "Réduire"} ${def.label}`);
-    if (collapsed) collapsedEmmCategories.add(def.key); else collapsedEmmCategories.delete(def.key);
-  });
-  heading.appendChild(toggle);
+  const collapsed = Boolean(emmCategoryCollapseState[def.key]);
+  const classes = [
+    "emm-category-group",
+    `emm-category-group--${def.key}`,
+    subjects.length ? "" : "emm-category-group--empty",
+    collapsed ? "is-collapsed" : ""
+  ].filter(Boolean).join(" ");
+  const group = makeEl("section", classes);
+  const header = makeEl("button", "emm-category-header");
+  header.type = "button";
+  header.setAttribute("aria-expanded", String(!collapsed));
+  header.title = collapsed ? "Développer la catégorie" : "Réduire la catégorie";
 
   const titleWrap = makeEl("div");
   titleWrap.appendChild(makeEl("div", "emm-category-title", def.label));
   titleWrap.appendChild(makeEl("div", "emm-category-subtitle", `${subjects.length} sujet(s)`));
-  heading.appendChild(titleWrap);
-  header.appendChild(heading);
+  header.appendChild(titleWrap);
 
+  const right = makeEl("div", "emm-category-header__right");
   const summary = makeEl("div", "emm-status-summary");
   if (selectedService) {
     const single = singleServiceEmmSummary(subjects, scopedSubjects);
@@ -1950,7 +1973,9 @@ function renderEmmCategoryGroup(def, subjects, scopedSubjects = subjects) {
     if (!subjects.length) addBadge(summary, "0", "badge--na");
     else statusCountEntries(subjects).forEach(([status, count]) => addBadge(summary, `${status} · ${count}`, statusBadgeClass(status)));
   }
-  header.appendChild(summary);
+  right.appendChild(summary);
+  right.appendChild(makeEl("span", "emm-category-chevron", "⌄"));
+  header.appendChild(right);
   group.appendChild(header);
 
   const body = makeEl("div", "emm-category-body");
@@ -1960,6 +1985,16 @@ function renderEmmCategoryGroup(def, subjects, scopedSubjects = subjects) {
     subjects.forEach((subject) => body.appendChild(renderWorkCard(subject)));
   }
   group.appendChild(body);
+
+  header.addEventListener("click", () => {
+    emmCategoryCollapseState[def.key] = !group.classList.contains("is-collapsed");
+    const nowCollapsed = Boolean(emmCategoryCollapseState[def.key]);
+    group.classList.toggle("is-collapsed", nowCollapsed);
+    header.setAttribute("aria-expanded", String(!nowCollapsed));
+    header.title = nowCollapsed ? "Développer la catégorie" : "Réduire la catégorie";
+    writeStoredState("grist_service_dashboard_collapsed_emm_categories_v16", emmCategoryCollapseState);
+  });
+
   return group;
 }
 
@@ -2045,7 +2080,8 @@ function renderSourceList(sourceKey, subjects) {
 
 function renderDashboard() {
   refreshServiceDimensionFilters();
-  updateDashboardTitle();
+  renderDashboardTitle();
+  Object.keys(sourceCollapseState).forEach(applySourceCollapseState);
   const all = allSubjects();
   const serviceScoped = all.filter(subjectMatchesServiceScope);
   refreshFilterOptions(serviceScoped);
@@ -2482,7 +2518,7 @@ async function loadAll() {
 function openSettings() {
   populateSettings();
   const diag = $("settingsDiagnostic");
-  if (diag) diag.textContent = `Diagnostic du widget\n${tableDiagnosticText()}\n\nTables visibles via API : ${allTableIds.length ? allTableIds.join(", ") : "aucune / API non disponible"}`;
+  if (diag) diag.textContent = `${tableDiagnosticText()}\n\nTables visibles via API : ${allTableIds.length ? allTableIds.join(", ") : "aucune / API non disponible"}`;
   $("settingsBackdrop").classList.remove("hidden");
   $("settingsModal").classList.remove("hidden");
   $("settingsModal").setAttribute("aria-hidden", "false");
@@ -2588,9 +2624,11 @@ async function autoDetectSettings() {
 }
 
 function bindEvents() {
-  document.querySelectorAll("[data-source-toggle]").forEach((button) => {
-    button.addEventListener("click", () => toggleSourcePanel(button.dataset.sourceToggle));
+  document.querySelectorAll("[data-collapse-source]").forEach((button) => {
+    button.addEventListener("click", () => toggleSourcePanel(button.dataset.collapseSource));
   });
+  Object.keys(sourceCollapseState).forEach(applySourceCollapseState);
+
   $("refreshBtn").addEventListener("click", loadAll);
   $("settingsBtn").addEventListener("click", openSettings);
   $("setupConfigBtn").addEventListener("click", openSettings);
@@ -2636,7 +2674,7 @@ function bindEvents() {
   $("globalSearch").addEventListener("input", (event) => { filters.search = event.target.value; renderDashboard(); });
   $("statusFilter").addEventListener("change", (event) => { filters.status = event.target.value; renderDashboard(); });
   $("priorityFilter").addEventListener("change", (event) => { filters.priority = event.target.value; renderDashboard(); });
-  $("hideClosedToggle").addEventListener("change", (event) => { filters.hideClosed = event.target.checked; renderDashboard(); });
+  $("hideClosedToggle")?.addEventListener("change", (event) => { filters.hideClosed = event.target.checked; renderDashboard(); });
 
   document.addEventListener("click", (event) => {
     if (!$("servicePicker").contains(event.target)) closeServiceDropdown();
