@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://docs.getgrist.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://docs.getgrist.com; object-src 'none'; base-uri 'none'; form-action 'none';" />
+  <title>Dashboard Service Utilisateur</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <h1>Dashboard Service Utilisateur</h1>
+        <span id="lastRefresh" class="last-refresh">Chargement…</span>
+      </div>
+      <div class="top-actions">
+        <button id="refreshBtn" class="btn btn--ghost" type="button">Rafraîchir</button>
+        <button id="settingsBtn" class="btn btn--ghost" type="button" aria-label="Configurer les tables">Configurer</button>
+      </div>
+    </header>
+
+    <section class="control-panel" aria-label="Filtres du dashboard">
+      <div class="service-picker" id="servicePicker">
+        <label for="serviceSearch">Service utilisateur</label>
+        <div class="combobox-wrap">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input id="serviceSearch" type="search" autocomplete="off" placeholder="Tous les services utilisateurs" aria-expanded="false" aria-controls="serviceDropdown" />
+          <button id="clearServiceBtn" class="clear-input hidden" type="button" aria-label="Afficher tous les services">×</button>
+        </div>
+        <div id="serviceDropdown" class="combo-dropdown hidden" role="listbox"></div>
+      </div>
+
+      <div class="compact-filter">
+        <label for="globalSearch">Recherche</label>
+        <input id="globalSearch" type="search" placeholder="Sujet, description, porteur…" />
+      </div>
+
+      <div class="compact-filter">
+        <label for="statusFilter">Statut</label>
+        <select id="statusFilter">
+          <option value="">Tous les statuts</option>
+        </select>
+      </div>
+
+      <div class="compact-filter">
+        <label for="priorityFilter">Priorité</label>
+        <select id="priorityFilter">
+          <option value="">Toutes les priorités</option>
+        </select>
+      </div>
+
+      <label class="check-filter">
+        <input id="hideClosedToggle" type="checkbox" />
+        <span>Masquer les sujets terminés</span>
+      </label>
+    </section>
+
+    <section id="serviceProfile" class="service-profile service-profile--all"></section>
+
+    <section id="kpiBar" class="kpi-bar" aria-label="Indicateurs consolidés"></section>
+
+    <main class="dashboard-grid">
+      <section class="source-panel source-panel--rtu" data-source="rtu">
+        <div class="source-header">
+          <div>
+            <div class="source-kicker">Référentiel technique</div>
+            <h2>RTU</h2>
+          </div>
+          <span id="rtuCount" class="source-count">0</span>
+        </div>
+        <div id="rtuList" class="source-list"></div>
+      </section>
+
+      <section class="source-panel source-panel--infra" data-source="infra">
+        <div class="source-header">
+          <div>
+            <div class="source-kicker">Réseau, raccordement et flux</div>
+            <h2>Infra &amp; Flux</h2>
+          </div>
+          <span id="infraCount" class="source-count">0</span>
+        </div>
+        <div id="infraList" class="source-list"></div>
+      </section>
+
+      <section class="source-panel source-panel--emm" data-source="emm">
+        <div class="source-header">
+          <div>
+            <div class="source-kicker">Services et configurations terminaux</div>
+            <h2>EMM</h2>
+          </div>
+          <span id="emmCount" class="source-count">0</span>
+        </div>
+        <div id="emmList" class="source-list"></div>
+      </section>
+
+      <section class="source-panel source-panel--conception" data-source="conception">
+        <div class="source-header">
+          <div>
+            <div class="source-kicker">Conception et mise en production</div>
+            <h2>Chantiers de conception</h2>
+          </div>
+          <span id="conceptionCount" class="source-count">0</span>
+        </div>
+        <div id="conceptionList" class="source-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div>
+        <span id="drawerSource" class="drawer-source"></span>
+        <h2 id="drawerTitle">Détail du sujet</h2>
+        <p id="drawerSubtitle" class="drawer-subtitle"></p>
+      </div>
+      <button id="closeDrawerBtn" class="icon-btn" type="button" aria-label="Fermer">×</button>
+    </div>
+    <form id="editForm" class="drawer-form"></form>
+    <div class="drawer-footer">
+      <div id="drawerMeta" class="drawer-meta"></div>
+      <button id="saveBtn" class="btn btn--primary" type="button">Enregistrer</button>
+    </div>
+  </aside>
+
+  <div id="settingsBackdrop" class="modal-backdrop hidden"></div>
+  <section id="settingsModal" class="settings-modal hidden" aria-hidden="true">
+    <div class="settings-header">
+      <div>
+        <span class="drawer-source">Configuration</span>
+        <h2>Tables Grist utilisées</h2>
+        <p>La détection est automatique. Modifiez uniquement si une table n’est pas trouvée.</p>
+      </div>
+      <button id="closeSettingsBtn" class="icon-btn" type="button">×</button>
+    </div>
+    <div id="settingsFields" class="settings-fields"></div>
+    <div class="settings-footer">
+      <button id="autoDetectBtn" class="btn btn--ghost" type="button">Détecter automatiquement</button>
+      <button id="saveSettingsBtn" class="btn btn--primary" type="button">Enregistrer la configuration</button>
+    </div>
+  </section>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
