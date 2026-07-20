@@ -2527,8 +2527,15 @@ function renderWorkCard(subject) {
 
   const top = makeEl("div", "subject-top");
   const left = makeEl("div");
-  left.appendChild(makeEl("div", "subject-title", subject.title));
-  left.appendChild(makeEl("div", "subject-service", subject.service || "Service non renseigné"));
+  if (subject.source === "emm") {
+    // Pour les cartes EMM, le seul intitulé affiché est le Service Utilisateur.
+    // La colonne métier "Service" reste disponible dans la fiche d'édition,
+    // mais n'est plus répétée sur la carte du Dashboard Service Utilisateur.
+    left.appendChild(makeEl("div", "subject-title", subject.service || "Service utilisateur non renseigné"));
+  } else {
+    left.appendChild(makeEl("div", "subject-title", subject.title));
+    left.appendChild(makeEl("div", "subject-service", subject.service || "Service non renseigné"));
+  }
   top.appendChild(left);
   addBadge(top, subject.status || "Statut non renseigné", statusBadgeClass(subject.status));
   card.appendChild(top);
