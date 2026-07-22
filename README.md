@@ -13,3 +13,10 @@ Déposer `index.html`, `README.md` et `.nojekyll` à la racine du dépôt GitHub
 ## Mise à jour V1.15
 
 Dans les cartes EMM du Dashboard Service Utilisateur, seul le nom de la colonne `Service Utilisateur` est désormais affiché. La valeur de la colonne `Service` n’est plus répétée sur la carte.
+
+
+## Affichage Étape / Statut
+
+- RTU, Réseau/Raccordement/Flux et Chantiers de conception : l'**Étape** est affichée en haut à droite ; le **Statut** reste visible dans le contenu de la carte.
+- EMM : en l'absence de colonne Étape, le **Statut** est affiché en haut à droite.
+- `En cours DT` est signalé en bleu clair et `Terminé` en vert ; les autres valeurs restent grises.

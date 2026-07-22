@@ -353,6 +353,22 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
 .badge--incomplete { background: #fff0d7; color: #9a5000; }
 .badge--na { background: #eef1f5; color: #667085; }
 .badge--waiting { background: #e5e7eb; color: #374151; }
+/* Workflow ownership shown at the top-right of subject cards. */
+.badge--workflow {
+  background: #eef1f5;
+  color: #4b5563;
+  border: 1px solid #d7dde6;
+}
+.badge--dt {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+.badge--done {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
 
 .rtu-progress { margin-top: 10px; }
 .rtu-progress__line { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; color: #667085; font-size: 11px; font-weight: 700; }
@@ -417,7 +433,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shado
 }
 /* Multi-service view: keep the RTU metadata deliberately compact inside each card. */
 .rtu-info-grid--compact {
-  grid-template-columns: repeat(2, minmax(105px, 1fr));
+  grid-template-columns: repeat(3, minmax(86px, 1fr));
   gap: 6px;
   margin-top: 7px;
 }
@@ -1735,6 +1751,15 @@ function statusBadgeClass(value) {
   return "badge--status";
 }
 
+// Top-right workflow badges intentionally use colour only for DT ownership
+// and completion. All other steps/statuses remain neutral.
+function workflowBadgeClass(value) {
+  const key = normalizeStatus(value);
+  if (key === "encoursdt") return "badge--dt";
+  if (key === "termine" || key === "terminee") return "badge--done";
+  return "badge--workflow";
+}
+
 function priorityBadgeClass(value) {
   const key = normalizeKey(value);
   if (["p0", "haute"].includes(key)) return "badge--p0";
@@ -2306,6 +2331,7 @@ function renderRtuCard(subject, inline = false) {
   const top = makeEl("div", "subject-top");
   const left = makeEl("div", inline ? "rtu-inline-heading" : "");
   const shownStatus = subject.rtuWaiting ? "En attente complétion RTU" : (subject.status || "Statut non renseigné");
+  const shownStage = subject.stage || "Étape non renseignée";
 
   if (!inline) {
     left.appendChild(makeEl("div", "subject-title", subject.title));
@@ -2319,15 +2345,15 @@ function renderRtuCard(subject, inline = false) {
   }
 
   top.appendChild(left);
-  if (!inline) {
-    addBadge(top, shownStatus, subject.rtuWaiting ? "badge--waiting" : statusBadgeClass(shownStatus));
-  }
+  // RTU cards are piloted by the Étape; the Statut remains visible in the card body.
+  addBadge(top, shownStage, workflowBadgeClass(subject.stage));
   card.appendChild(top);
 
   if (!inline) {
     const info = makeEl("div", "rtu-info-grid rtu-info-grid--compact");
     appendRtuInfo(info, "Version RTU", subject.version || "Non renseignée");
     appendRtuInfo(info, "Date de réception", formatDate(subject.receivedDate) || asText(subject.receivedDate) || "Non renseignée");
+    appendRtuInfo(info, "Statut", shownStatus);
     card.appendChild(info);
   }
 
@@ -2537,14 +2563,22 @@ function renderWorkCard(subject) {
     left.appendChild(makeEl("div", "subject-service", subject.service || "Service non renseigné"));
   }
   top.appendChild(left);
-  addBadge(top, subject.status || "Statut non renseigné", statusBadgeClass(subject.status));
+
+  // EMM has no Étape column: its Statut remains the workflow badge.
+  // All other sources display Étape at the top-right.
+  const workflowValue = subject.source === "emm" ? subject.status : subject.stage;
+  const workflowFallback = subject.source === "emm" ? "Statut non renseigné" : "Étape non renseignée";
+  addBadge(top, workflowValue || workflowFallback, workflowBadgeClass(workflowValue));
   card.appendChild(top);
 
   const badges = makeEl("div", "badges");
   addBadge(badges, subject.priority, priorityBadgeClass(subject.priority));
   addBadge(badges, subject.category);
   addBadge(badges, subject.caseType);
-  addBadge(badges, subject.stage);
+  // For Infra & Flux and Conception, the Statut remains visible in the body.
+  if (subject.source !== "emm") {
+    addBadge(badges, `Statut : ${subject.status || "Non renseigné"}`, "badge--workflow");
+  }
   card.appendChild(badges);
 
   if (subject.description) card.appendChild(makeEl("div", "subject-description", truncate(subject.description, 220)));
